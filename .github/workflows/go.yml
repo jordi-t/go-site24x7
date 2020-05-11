@@ -1,5 +1,5 @@
 on: push
-name: go-site24x7
+name: CI
 jobs:
   linting:
     name: Linting
