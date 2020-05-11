@@ -7,7 +7,7 @@ import (
 
 // UserService provides an interface Site24x7 user management.
 type UserService struct {
-	client *client
+	client *Client
 }
 
 // Users contains a list of Site24x7 users.

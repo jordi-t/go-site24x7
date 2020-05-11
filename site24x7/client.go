@@ -12,7 +12,7 @@ type authenticator interface {
 }
 
 // Client represents a client to the Site24x7 API.
-type client struct {
+type Client struct {
 	auth       authenticator
 	httpClient *http.Client
 	Users      *UserService
@@ -20,7 +20,7 @@ type client struct {
 }
 
 // NewClient returns a Site24x7 client.
-func NewClient(auth authenticator, apiDomain string, hc ...http.Client) *client {
+func NewClient(auth authenticator, apiDomain string, hc ...http.Client) *Client {
 
 	var httpClient http.Client
 	if hc == nil {
@@ -31,7 +31,7 @@ func NewClient(auth authenticator, apiDomain string, hc ...http.Client) *client 
 		httpClient = hc[0]
 	}
 
-	c := &client{
+	c := &Client{
 		auth:       auth,
 		httpClient: &httpClient,
 		apiDomain:  apiDomain,
@@ -43,7 +43,7 @@ func NewClient(auth authenticator, apiDomain string, hc ...http.Client) *client 
 }
 
 // Get does an HTTP-GET on a given Site24x7 API endpoint.
-func (c *client) get(endpoint string) (*http.Response, error) {
+func (c *Client) get(endpoint string) (*http.Response, error) {
 	req, err := http.NewRequest("GET", c.apiDomain+endpoint, nil)
 	if err != nil {
 		return nil, err
