@@ -55,6 +55,7 @@ func TestGet(t *testing.T) {
 	c = NewClient(m, server.URL, http.Client{Timeout: time.Second * 10})
 	res, _ = c.get("/test")
 	body, _ = ioutil.ReadAll(res.Body)
+	defer res.Body.Close()
 	if string(body) != want {
 		t.Errorf("failed: expected %v; got %v", want, string(body))
 	}
