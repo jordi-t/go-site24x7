@@ -9,7 +9,9 @@ jobs:
 
     - name: Lint
       uses: actions-contrib/golangci-lint@v1
+      with:
+        args: run -E golint -E bodyclose
     - name: Test
       uses: cedrickring/golang-action@1.5.2
       with:
-        args: go test --cover ./... 
+        args: go test -v --cover ./... 
