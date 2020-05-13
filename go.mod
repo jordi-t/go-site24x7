@@ -1,4 +1,4 @@
-module go-site24x7
+module github.com/jseris/go-site24x7
 
 go 1.14
 

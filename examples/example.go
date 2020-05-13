@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"go-site24x7/oauth"
-	"go-site24x7/site24x7"
+	"github.com/jseris/go-site24x7/oauth"
+	"github.com/jseris/go-site24x7/site24x7"
 	"os"
 )
 
