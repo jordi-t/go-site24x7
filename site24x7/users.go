@@ -2,7 +2,9 @@ package site24x7
 
 import (
 	"encoding/json"
+	"github.com/pkg/errors"
 	"io/ioutil"
+	"strings"
 )
 
 // UserService provides an interface Site24x7 user management.
@@ -17,43 +19,43 @@ type UserList struct {
 
 // User represents a Site24x7 user.
 type User struct {
-	ImagePresent    bool `json:"image_present"`
-	TwitterSettings struct {
-	} `json:"twitter_settings"`
-	SelectionType    int    `json:"selection_type"`
-	EmailAddress     string `json:"email_address"`
-	IsAccountContact bool   `json:"is_account_contact"`
-	IsContact        bool   `json:"is_contact"`
-	AlertSettings    struct {
-		Trouble         []int `json:"trouble"`
-		Up              []int `json:"up"`
-		DontAlertOnDays []int `json:"dont_alert_on_days"`
-		EmailFormat     int   `json:"email_format"`
-		AlertingPeriod  struct {
-			EndTime   string `json:"end_time"`
-			StartTime string `json:"start_time"`
-		} `json:"alerting_period"`
-		Down    []int `json:"down"`
-		Applogs []int `json:"applogs"`
-		Anomaly []int `json:"anomaly"`
-	} `json:"alert_settings"`
-	UserGroups []string `json:"user_groups"`
-	IsInvited  bool     `json:"is_invited"`
-	ImSettings struct {
-	} `json:"im_settings"`
-	NotifyMedium   []int  `json:"notify_medium"`
-	IsEditAllowed  bool   `json:"is_edit_allowed"`
-	DisplayName    string `json:"display_name"`
-	UserID         string `json:"user_id"`
-	MobileSettings struct {
-		CountryCode    string `json:"country_code"`
-		SmsProviderID  int    `json:"sms_provider_id"`
-		MobileNumber   string `json:"mobile_number"`
-		CallProviderID int    `json:"call_provider_id"`
-	} `json:"mobile_settings"`
-	UserRole int    `json:"user_role"`
-	JobTitle int    `json:"job_title"`
-	Zuid     string `json:"zuid"`
+	ImagePresent     bool           `json:"image_present,omitempty"`
+	SelectionType    int            `json:"selection_type,omitempty"`
+	EmailAddress     string         `json:"email_address"`
+	IsAccountContact bool           `json:"is_account_contact,omitempty"`
+	IsContact        bool           `json:"is_contact,omitempty"`
+	AlertSettings    AlertSettings  `json:"alert_settings"`
+	UserGroups       []string       `json:"user_groups,omitempty"`
+	IsInvited        bool           `json:"is_invited,omitempty"`
+	NotifyMedium     []int          `json:"notify_medium,omitempty"`
+	IsEditAllowed    bool           `json:"is_edit_allowed,omitempty"`
+	DisplayName      string         `json:"display_name"`
+	UserID           string         `json:"user_id,omitempty"`
+	MobileSettings   MobileSettings `json:"mobile_settings"`
+	UserRole         int            `json:"user_role,omitempty"`
+	JobTitle         int            `json:"job_title,omitempty"`
+	Zuid             string         `json:"zuid,omitempty"`
+}
+
+type AlertSettings struct {
+	Trouble         []int `json:"trouble"`
+	Up              []int `json:"up"`
+	DontAlertOnDays []int `json:"dont_alert_on_days"`
+	EmailFormat     int   `json:"email_format"`
+	AlertingPeriod  struct {
+		EndTime   string `json:"end_time"`
+		StartTime string `json:"start_time"`
+	} `json:"alerting_period"`
+	Down    []int `json:"down"`
+	Applogs []int `json:"applogs"`
+	Anomaly []int `json:"anomaly"`
+}
+
+type MobileSettings struct {
+	CountryCode    string `json:"country_code"`
+	SmsProviderID  int    `json:"sms_provider_id,omitempty"`
+	MobileNumber   string `json:"mobile_number,omitempty"`
+	CallProviderID int    `json:"call_provider_id"`
 }
 
 // List returns all users in the Site24x7 account.
@@ -71,4 +73,29 @@ func (us *UserService) List() (UserList, error) {
 	}
 
 	return users, nil
+}
+
+// Create a user
+func (us *UserService) Create(user User) ([]byte, error) {
+	b, err := json.Marshal(user)
+	if err != nil {
+		return nil, errors.Wrap(err, "cannot marshal the User struct")
+	}
+
+	res, err := us.client.post("/users", b)
+	if err != nil {
+		return nil, errors.Wrap(err, "post request failed")
+	}
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, errors.Wrap(err, "cannot read response stream")
+	}
+	defer res.Body.Close()
+
+	if strings.Contains(string(body), "error") {
+		return nil, errors.New(string(body))
+	}
+
+	return body, nil
 }

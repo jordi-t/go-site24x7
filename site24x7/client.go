@@ -1,12 +1,13 @@
 package site24x7
 
 import (
+	"bytes"
 	"github.com/pkg/errors"
 	"net/http"
 	"time"
 )
 
-// ClientConfig provides an interface for the client configuration
+// Authenticator provides an interface for the client configuration
 type authenticator interface {
 	GetAuthToken() (string, error)
 }
@@ -54,6 +55,26 @@ func (c *Client) get(endpoint string) (*http.Response, error) {
 		return nil, errors.Wrap(err, "cannot get token")
 	}
 	req.Header.Set("Accept", "application/json; version=2.0")
+	req.Header.Set("Authorization", "Zoho-oauthtoken "+authToken)
+
+	res, err := c.httpClient.Do(req)
+
+	return res, err
+}
+
+// Post does an HTTP-POST on a given Site24x7 API endpoint.
+func (c *Client) post(endpoint string, json []byte) (*http.Response, error) {
+
+	req, err := http.NewRequest("POST", c.apiDomain+endpoint, bytes.NewBuffer(json))
+	if err != nil {
+		return nil, err
+	}
+	authToken, err := c.auth.GetAuthToken()
+	if err != nil {
+		return nil, errors.Wrap(err, "cannot get token")
+	}
+	req.Header.Set("Accept", "application/json; version=2.0")
+	req.Header.Set("Content-Type", "application/json;charset=UTF-8")
 	req.Header.Set("Authorization", "Zoho-oauthtoken "+authToken)
 
 	res, err := c.httpClient.Do(req)
