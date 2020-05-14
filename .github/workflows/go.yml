@@ -20,4 +20,4 @@ jobs:
       with:
         args: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
     - name: CodeCoverage
-        uses: codecov/codecov-action@v1.0.7
+      uses: codecov/codecov-action@v1.0.7
