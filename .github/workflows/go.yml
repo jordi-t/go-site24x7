@@ -19,3 +19,10 @@ jobs:
       uses: cedrickring/golang-action@1.5.2
       with:
         args: go test -v --cover ./... 
+  code-coverage: 
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Codecov
+        uses: codecov/codecov-action@v1.0.7
