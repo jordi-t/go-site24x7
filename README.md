@@ -1,4 +1,4 @@
-![CI](https://github.com/jseris/go-site24x7/workflows/CI/badge.svg) ![status-badge](https://goreportcard.com/badge/github.com/jseris/go-site24x7) ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/jseris/go-site24x7)
+![CI](https://github.com/jseris/go-site24x7/workflows/CI/badge.svg) [![codecov](https://codecov.io/gh/jseris/go-site24x7/branch/master/graph/badge.svg)](https://codecov.io/gh/jseris/go-site24x7) ![status-badge](https://goreportcard.com/badge/github.com/jseris/go-site24x7) ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/jseris/go-site24x7)
 
 # go-site24x7
 Go client library for the Site24x7 API.  
