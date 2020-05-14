@@ -2,6 +2,7 @@ package site24x7
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/pkg/errors"
 	"io/ioutil"
 	"strings"
@@ -76,26 +77,33 @@ func (us *UserService) List() (UserList, error) {
 }
 
 // Create a user
-func (us *UserService) Create(user User) ([]byte, error) {
+func (us *UserService) Create(user User) (User, error) {
 	b, err := json.Marshal(user)
 	if err != nil {
-		return nil, errors.Wrap(err, "cannot marshal the User struct")
+		return User{}, errors.Wrap(err, "cannot marshal the User struct")
 	}
 
 	res, err := us.client.post("/users", b)
 	if err != nil {
-		return nil, errors.Wrap(err, "post request failed")
+		return User{}, errors.Wrap(err, "post request failed")
 	}
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return nil, errors.Wrap(err, "cannot read response stream")
+		return User{}, errors.Wrap(err, "cannot read response stream")
 	}
 	defer res.Body.Close()
 
 	if strings.Contains(string(body), "error") {
-		return nil, errors.New(string(body))
+		return User{}, errors.New(string(body))
 	}
 
-	return body, nil
+	userList := UserList{}
+	if err := json.Unmarshal(body, &userList); err != nil {
+		return User{}, err
+	}
+
+	fmt.Println(userList.Users[0])
+
+	return userList.Users[0], nil
 }

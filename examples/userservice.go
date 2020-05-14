@@ -43,7 +43,7 @@ func createUser(client *site24x7.Client) {
 		return
 	}
 
-	fmt.Printf("CreateUser response: %s", string(b))
+	fmt.Printf("CreateUser response: %s", b)
 }
 
 func main() {

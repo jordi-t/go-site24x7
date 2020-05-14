@@ -42,3 +42,30 @@ func TestList(t *testing.T) {
 		t.Errorf("failed: expected %v; got %v", want, got)
 	}
 }
+
+func TestCreateOK(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `{
+				 "code": 0,
+				 "message": "success",
+				 "data": {
+				   "email_address": "joe@company.com"
+				 }
+				}`)
+	})
+
+	want := User{
+		EmailAddress: "joe@company.com",
+	}
+
+	m := &MockAuthenticator{}
+	c := NewClient(m, server.URL)
+	got, _ := c.Users.Create(User{})
+
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("failed: expected %v; got %v", want, got)
+	}
+}
